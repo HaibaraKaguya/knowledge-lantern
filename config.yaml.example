@@ -1,0 +1,9 @@
+# Shuchiin Academy 配置文件
+# 复制为 config.yaml 并填入你的 API Key：
+#   cp config.yaml.example config.yaml
+
+api_key: ""
+api_base_url: ""
+model: "gpt-4o-mini"
+temperature: 0.3
+timeout: 120

@@ -1,0 +1,28 @@
+[project]
+name = "shuchiin-academy"
+version = "2.0.0"
+description = "Shuchiin Academy — Four-agent parallel workflow: CEO → Researcher → Developer×2 → Reviewer×2 with LangGraph orchestration"
+requires-python = ">=3.12"
+dependencies = [
+    "langgraph>=0.2",
+    "langgraph-checkpoint-sqlite>=3.0",
+    "langchain-openai>=0.2",
+    "langchain-core>=0.3",
+    "pyyaml>=6",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "websockets>=14",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+]
