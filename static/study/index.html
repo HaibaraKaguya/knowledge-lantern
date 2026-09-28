@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>知题 · 本地学习记录</title>
+  <link rel="stylesheet" href="styles.css?v=study-20260917-1">
+</head>
+<body>
+  <main class="phone-shell">
+    <header class="topbar">
+      <div><p class="eyebrow">离线学习记录</p><h1>知题</h1></div>
+      <span class="mock-badge">示例记录 · 本地展示</span>
+    </header>
+
+    <section class="view active" id="capture" aria-labelledby="capture-title">
+      <h2 id="capture-title">记录一题</h2>
+      <p class="muted">先安全保存原图，再异步识别文字、公式与知识点。以下为示例记录，识别结果以「识别」页的真实接入为准。</p>
+      <button class="camera" type="button" data-toast="示例：相机将在这里打开" aria-label="拍摄一道题目">
+        <span class="camera-ico" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+        拍摄题目
+      </button>
+      <div class="capture-preview">
+        <div class="paper">f(x)=−x²+4x+5<br><small>求函数最大值</small></div>
+        <div>
+          <p class="status">● 已保存，识别完成</p>
+          <h3>二次函数的最值</h3>
+          <p class="chips"><span>函数</span><span>配方法</span><span>易错</span></p>
+        </div>
+      </div>
+      <button class="primary" type="button" data-view="library">查看已保存记录</button>
+    </section>
+
+    <section class="view" id="library" aria-labelledby="library-title">
+      <h2 id="library-title">记录库</h2>
+      <p class="muted">按条件精确筛选与排序；想按意思找题，请使用“检索”。</p>
+      <div class="toolbar" aria-label="筛选和排序">
+        <button type="button" class="filter selected" aria-pressed="true">全部</button>
+        <button type="button" class="filter" aria-pressed="false">函数</button>
+        <button type="button" class="filter" aria-pressed="false">几何</button>
+        <label>排序<select id="sort-records"><option>最近记录</option><option>最常做错</option><option>最久未复习</option></select></label>
+      </div>
+      <div id="library-cards" class="record-grid"></div>
+    </section>
+
+    <section class="view" id="search" aria-labelledby="search-title">
+      <h2 id="search-title">检索知识点</h2>
+      <p class="muted">输入自然问题，系统会提取知识点并从你的记录中找证据。</p>
+      <form id="search-form" class="searchbox">
+        <label class="sr-only" for="query">输入问题</label>
+        <input id="query" value="二次函数最大值哪里没学会？">
+        <button class="primary" type="submit">分析</button>
+      </form>
+      <div id="search-results" hidden>
+        <section class="concepts" aria-labelledby="concept-title"><h3 id="concept-title">从问题提取的知识点</h3><p class="chips"><span>二次函数</span><span>最值</span><span>顶点式</span><span>配方法</span></p></section>
+        <section class="gap-card" aria-labelledby="gap-title"><h3 id="gap-title">可能遗漏的知识</h3><p><strong>配方法与顶点式转换</strong></p><p>过去 14 天相关记录 6 条，其中 4 条被标记为“不会/做错”；它也是“二次函数最值”的前置方法。</p><small>这是基于你的记录统计，不是对能力的断言。</small></section>
+        <section aria-labelledby="evidence-title"><div class="section-row"><h3 id="evidence-title">相关题目 <small>5 条证据</small></h3><span class="rank-note">混合检索排序</span></div><div id="search-cards" class="record-grid"></div></section>
+        <section class="summary" aria-labelledby="summary-title"><h3 id="summary-title">学习总结</h3><p>你这次提问更像是在寻找“从题目到方法”的连接：记录中常出现已知顶点或开口方向，却没有把式子转换为顶点式。建议先回顾前两题，再完成一题变式。</p><small>总结仅依据展示的记录与标签生成（示例）。</small></section>
+      </div>
+    </section>
+
+    <section class="view" id="review" aria-labelledby="review-title">
+      <h2 id="review-title">今日回顾</h2>
+      <p class="muted">只安排 3 道最值得回看的题。</p>
+      <div class="review-card"><span class="big-number">01</span><div><h3>配方法求最值</h3><p>3 天前 · 标记为不会</p><button class="primary" type="button" data-toast="示例：已开始回顾">开始回顾</button></div></div>
+      <div class="review-card"><span class="big-number">02</span><div><h3>顶点式与图像</h3><p>10 天前 · 模糊</p></div></div>
+    </section>
+
+    <section class="view" id="ocr" aria-labelledby="ocr-title">
+      <h2 id="ocr-title">识别接入（本机 OCR + 视觉模型）</h2>
+      <p class="muted">把图片交给本机 LearningOCR 转成结构化 JSON。图片只按内容寻址落在受控上传目录，结果分「主记录」与「审计 sidecar」两份；mock 与 real 状态明确标注。</p>
+      <p class="ocr-health" id="ocr-health" role="status" aria-live="polite" data-state="checking">能力状态：检测中…</p>
+      <form id="ocr-form" class="ocr-form" aria-describedby="ocr-note-help">
+        <label>本地图片<input id="ocr-file" type="file" accept="image/*"></label>
+        <label>或图片引用<input id="ocr-image" placeholder="受控上传目录内的相对引用（内容寻址，如 &lt;sha256&gt;.png）"></label>
+        <label>模式<select id="ocr-mode"><option value="auto">auto（缺权重时明确回退 mock）</option><option value="mock">mock（不加载模型）</option><option value="real">real（需权重齐备）</option></select></label>
+        <label>备注<input id="ocr-note" placeholder="可选：学生自己的备注"></label>
+        <button class="primary ocr-submit" id="ocr-submit" type="submit">
+          <span class="spinner" id="ocr-spinner" aria-hidden="true"></span>
+          <span id="ocr-submit-text">开始识别</span>
+        </button>
+      </form>
+      <p class="muted ocr-note" id="ocr-note-help">记录 id 不透明且不可覆盖（不取自文件名）；同名不同内容不会互相覆盖。同一图片内容 + 同一模式重复提交会复用既有结果（标记「重复上传，复用既有记录」）。</p>
+      <p class="status" id="ocr-status" role="status" aria-live="polite"></p>
+      <div id="ocr-result" hidden></div>
+    </section>
+
+    <div class="toast" role="status" aria-live="polite"></div>
+    <nav aria-label="主要导航">
+      <button type="button" data-view="capture" class="nav active" aria-current="page"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3"/></svg><span>记录</span></button>
+      <button type="button" data-view="library" class="nav"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="10" y1="10" x2="10" y2="20"/></svg><span>记录库</span></button>
+      <button type="button" data-view="search" class="nav"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><span>检索</span></button>
+      <button type="button" data-view="review" class="nav"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg><span>回顾</span></button>
+      <button type="button" data-view="ocr" class="nav"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h5"/><path d="M8 17h3"/></svg><span>识别</span></button>
+    </nav>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

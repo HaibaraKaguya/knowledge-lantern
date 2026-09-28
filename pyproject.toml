@@ -1,18 +1,27 @@
 [project]
-name = "shuchiin-academy"
-version = "2.0.0"
-description = "Shuchiin Academy — Four-agent parallel workflow: CEO → Researcher → Developer×2 → Reviewer×2 with LangGraph orchestration"
+name = "knowledge-lantern"
+version = "3.0.0"
+description = "Knowledge Lantern - an auditable internal knowledge workspace (FastAPI + SQLite + OpenAI-compatible model provider)"
 requires-python = ">=3.12"
 dependencies = [
-    "langgraph>=0.2",
-    "langgraph-checkpoint-sqlite>=3.0",
-    "langchain-openai>=0.2",
-    "langchain-core>=0.3",
-    "pyyaml>=6",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
-    "websockets>=14",
+    "httpx>=0.27",
+    "pyyaml>=6",
+    "pydantic>=2",
 ]
+
+[project.optional-dependencies]
+# 混合检索/图谱阶段 1 的可选运行时：缺失时检索自动降级为 FTS（不报错）。
+retrieval = [
+    "numpy>=1.26",
+    "faiss-cpu>=1.8",
+    "sentence-transformers>=3.0",
+    "FlagEmbedding>=1.3",
+]
+# 学习模块 OCR 接入（src/study/ocr_*.py）不新增第三方依赖：适配器只通过子进程
+# 调用外部 LearningOCR 项目自带的 .venv（可用 LEARNINGOCR_ROOT /
+# LEARNINGOCR_PYTHON / LEARNINGOCR_TIMEOUT 覆盖），不复制权重、不下载模型。
 
 [build-system]
 requires = ["hatchling"]

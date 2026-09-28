@@ -1,463 +1,292 @@
-# Shuchiin Academy — 四 Agent 并行工作流
+# Knowledge Lantern
 
-基于 LangGraph 的 **CEO → Researcher(前置调研) → Developer×2(并行) → Reviewer×2(独立审查)** 管道。
+Knowledge Lantern（知识灯塔）是一个面向企业内部知识场景的本地化问答原型，当前聚焦于财务与部门资料的检索、问答和治理。
 
-## 当前架构（2026-07-22）
+项目的核心约束是：
 
-```
-🎯 CEO (拆解任务)
-     │
-     ├─ [有前端任务] → 🧠 Researcher (前端设计调研: 配色/布局/组件)
-     │                        │
-     │                        └→ fanout
-     │
-     └─ fanout (Send 并行扇出)
-           │
-           ├─ 🎨 Dev(frontend) ──→ 🔍 Reviewer(frontend)
-           │                            │
-           │                  score<59 → Dev (直接回退，增量修复)
-           │                  score≥59 → END
-           │
-           └─ ⚙️ Dev(backend)  ──→ 🔍 Reviewer(backend)
-                                        │
-                              score<59 → Dev (直接回退，增量修复)
-                              score≥59 → END
-```
+- 权限先于检索：未授权的内容不会进入候选集、模型上下文或返回的证据。
+- 证据可追溯：问答结果包含检索词、来源、请求 ID 和耗时信息。
+- 动作可审计：资料提交、审核、检索决策和会话都会留下结构化记录。
+- 模型无关：通过标准 OpenAI-compatible 接口连接本地或远程模型服务。
 
-### 四 Agent 职责
+## 当前形态
 
-| Agent | Emoji | 输入 | 输出 |
-|-------|-------|------|------|
-| **CEO** | 🎯 | user_input | dispatch_tasks{frontend, backend} |
-| **Researcher** | 🧠 | 前端任务描述 | 设计简报（配色/布局/组件要点/参考链接）→ dispatch_context |
-| **Developer** | 🔧 | task_description + role_prompt + research_notes + kept_code + reviewer_feedback | code + output_path + html_url |
-| **Reviewer** | 🔍 | task_description + code + verify_result | review_report + 若退回: kept_code + reviewer_feedback |
-
-### 关键参数
-
-| 参数 | 值 | 含义 |
-|------|-----|------|
-| `REVIEWER_PASS_SCORE` | 59 | 低于 59 分退回重做 |
-| `MAX_RETRY_ROUNDS` | 3 | 最多退回重做 3 次 |
-| `max_tokens` | 16384 | LLM 输出上限（StepFun/DeepSeek） |
-
-### Researcher 前置调研（仅前端项目）
-
-CEO 分析出有前端任务后，先调用 Researcher 做设计调研（配色方案 CSS 变量、布局模式、组件要点、参考链接），产出 `dispatch_context` 文件路径。Developer 启动时读取调研结果，获得设计方向指引。
-
-### 增量修复机制（Reviewer 退回时）
-
-```
-Reviewer 退回时不丢弃代码：
-  kept_code       = 上次完整代码（好的部分保留）
-  reviewer_feedback = 具体问题列表（Developer 只看这个）
-  notebook        = 问题文件映射 {filename: {issues, fix_status}}
-
-Developer 收到：
-  draft_code = kept_code（在此基础改，不从头写）
-  retry_feedback = reviewer_feedback（只修这些问题）
+```text
+浏览器
+  |
+  v
+FastAPI + 静态前端 (:8000)
+  |
+  +-- demo IAM / 访问决策 ------ data/iam.db
+  +-- 知识检索与证据 ------------ data/knowledge.db
+  +-- 会话 ---------------------- data/checkpoints.db
+  +-- 审计 ---------------------- data/audit.db
+  |
+  +-- 模型服务 (OpenAI API) ------ 可配置的 /v1 端点
+  +-- 学习 OCR 适配层 ------------ 外部 LearningOCR 项目
 ```
 
-### Verifier — 纯代码验证
+后端代码位于 `src/`，浏览器界面位于 `static/`。当前服务包含三类主要工作流：
 
-Reviewer 调用前，先通过 `_verify_code()` 做纯代码验证（不消耗 LLM token）：
-- 前端：检查 HTML 结构、CSS 变量、JS 模块、CDN 引用
-- 后端：检查 server.js/package.json 存在、Node 语法检查
-- 验证结果传给 Reviewer 作为评分参考
+1. 部门知识问答：自动在 `DIRECT` 和 `INTERNAL_RETRIEVAL` 两条路径之间选择。
+2. 资料治理：会计提交资料，主管审核后才可以进入检索。
+3. 学习记录 OCR：通过适配层调用本机 LearningOCR，保存结构化主记录和独立审计 sidecar。
 
----
+项目仍是原型和测试平台，不是生产认证系统，也不包含真实公司的制度、财务或经营数据。
 
 ## 快速开始
 
+### 1. 安装依赖
+
+项目要求 Python 3.12 或更高版本。首次使用可以执行：
+
 ```bash
-cd ~/"Shuchiin Academy"
-cp config.yaml.example config.yaml  # 填入 API Key
-pip install -e .
-
-# Web 服务 (FastAPI + WebSocket 实时进度)
-python src/server.py
-# 打开 http://localhost:8000
-
-# CLI 模式
-python -m src "做一个打飞机游戏"
+cd /path/to/knowledge-lantern
+python3 -m venv .venv
+.venv/bin/pip install -e .
+.venv/bin/pip install pytest pytest-asyncio
 ```
 
----
+如果需要启用向量检索和 reranker，再安装可选依赖：
+
+```bash
+.venv/bin/pip install -e '.[retrieval]'
+```
+
+### 2. 配置模型端点
+
+复制示例配置并按需修改：
+
+```bash
+cp config.yaml.example config.yaml
+```
+
+默认配置提供了一个本机 OpenAI-compatible 端点示例：
+
+```yaml
+api_base_url: http://127.0.0.1:8080/v1
+model: local-model
+```
+
+配置优先级为：环境变量 > `config.yaml` > 内置默认值。可用环境变量包括：
+`SRC_API_KEY`、`SRC_API_BASE_URL`、`SRC_MODEL`、`SRC_TEMPERATURE`、`SRC_TIMEOUT` 和
+`SRC_MAX_TOKENS`。
+
+### 3. 启动服务
+
+先按所使用的推理服务启动一个 OpenAI-compatible `/v1/chat/completions` 端点，并在 `config.yaml` 或环境变量中配置 `SRC_API_BASE_URL`、`SRC_MODEL` 和可选的 `SRC_API_KEY`。然后启动 FastAPI：
+
+```bash
+./run_server.sh
+```
+
+服务启动后访问：
+
+- 主工作台：<http://127.0.0.1:8000>
+- 学习记录页面：<http://127.0.0.1:8000/static/study/index.html>
+- 服务健康检查：<http://127.0.0.1:8000/api/health>
+- 问答与检索健康检查：<http://127.0.0.1:8000/api/paper-qa/health>
+
+也可以直接使用 uvicorn 启动：
+
+```bash
+PYTHONPATH=src .venv/bin/python -m uvicorn src.server:app --host 0.0.0.0 --port 8000
+```
+
+模型服务不可用时，服务和多数测试仍可启动；问答接口会报告模型不可用。知识库检索、权限和资料治理逻辑不依赖模型进程。
+
+## 主要能力
+
+### 部门知识问答
+
+`POST /api/paper-qa/ask` 会由本地模型选择问答路径：
+
+- `INTERNAL_RETRIEVAL`：针对部门制度、流程、财务和内部资料进行授权检索，再根据证据生成回答。
+- `DIRECT`：不依赖内部资料的通用问题直接交给本地模型，`sources` 为空。
+
+检索默认使用 SQLite FTS5。配置和本地模型都可用时，还可以组合：
+
+- BGE-M3 向量检索；
+- GraphRAG 图谱扩展；
+- BGE reranker；
+- 加权 RRF 融合。
+
+这些组件是可选的。组件缺失或索引未构建时会安全降级为 FTS5，健康接口会如实报告实际启用状态。
+
+### 资料提交与审核
+
+资料工作流为：
+
+```text
+accountant 提交 -> pending_review -> finance_supervisor 发布或拒绝 -> active / rejected
+```
+
+未发布的资料不参与问答检索。服务端会检查角色、资料分类上限、状态和提交人与审核人关系；提交人不能审核自己的资料。
+
+### 学习记录与 OCR
+
+`static/study/` 是一个独立的移动优先学习记录界面，其中记录库和部分检索内容仍是本地演示数据。
+
+「识别」流程通过 `/api/study/ocr/*` 接入外部 LearningOCR 项目：
+
+- 图片只允许写入 `data/study_ocr/uploads/`；
+- 上传路径按 SHA-256 内容寻址，同一内容只保存一份；
+- 业务记录 ID 不使用文件名或 SHA-256；
+- 主记录和审计 sidecar 分开保存；
+- OCR 失败时标记为 `failed`，不会伪造识别结果；
+- `mock` 模式不需要模型，`real` 模式依赖外部项目及其模型环境。
+
+默认外部项目目录为 `~/LearningOCR/ocr-vlm-pipeline`，可通过以下环境变量覆盖：
+
+| 变量 | 默认值 | 作用 |
+| --- | --- | --- |
+| `LEARNINGOCR_ROOT` | `~/LearningOCR/ocr-vlm-pipeline` | 外部项目根目录 |
+| `LEARNINGOCR_PYTHON` | `<root>/.venv/bin/python` | 外部项目 Python 解释器 |
+| `LEARNINGOCR_TIMEOUT` | `300` | 单次 OCR 超时时间，单位为秒 |
+
+## Demo 身份与权限
+
+当前没有真实登录系统，前端通过 `user_id` 选择演示身份；服务端从 `data/iam.db` 读取权限，不信任客户端提交的角色或 scope。
+
+| 身份 | 能力 |
+| --- | --- |
+| `employee` | 只能检索公开知识 |
+| `accountant` | 可检索公开知识和内部财务知识；可提交资料，不能审核资料 |
+| `finance_supervisor` | 可检索公开、内部和受限财务知识；可审核其他人提交的资料 |
+
+分类等级为 `public < internal < restricted`。受限资料目前固定在 `finance-ledger / finance` 范围内。
+
+## 测试期种子知识
+
+仓库包含用于检索、权限和图谱测试的合成/整理语料：
+
+| 类别 | 条目数 |
+| --- | ---: |
+| 经营分析 | 220 |
+| 财务合规 | 220 |
+| 人力资源 | 220 |
+| 项目与运营 | 220 |
+| 行政 | 220 |
+| 合计 | 1100 |
+
+这些内容不是任何真实公司的数据，也不应被当作实际制度或财务口径使用。种子内容的出处字段为：
+
+```text
+origin = seeded_synthetic_or_curated
+license = project-generated-synthetic-no-third-party
+is_real_company_data = false
+seed_label = 测试期种子知识
+```
+
+如需重建种子库：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/build_demo_knowledge.py \
+  --db data/knowledge.db
+```
+
+默认是幂等的增量覆盖。`--force` 会删除目标数据库后重建，可能丢失同库中的其他资料，使用前应先备份。
+
+重建后可以运行迁移和审计：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/migrate_knowledge_metadata.py \
+  --db data/knowledge.db
+
+PYTHONPATH=src .venv/bin/python scripts/audit_knowledge_seed.py \
+  --db data/knowledge.db
+```
+
+向量索引是可选的，也可以从知识库重新生成：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/build_knowledge_indices.py \
+  --db data/knowledge.db
+```
+
+## 数据文件
+
+应用运行时使用 `data/` 下的 SQLite 数据库和报告文件：
+
+| 文件 | 用途 |
+| --- | --- |
+| `iam.db` | 演示身份、角色和访问范围 |
+| `knowledge.db` | 文档、chunk、FTS5 索引和图谱数据 |
+| `checkpoints.db` | 会话和问答轮次 |
+| `audit.db` | 检索、授权和资料动作审计 |
+| `study_ocr/index.db` | OCR 任务元数据 |
+| `study_ocr/uploads/` | 受控上传图片 |
+| `study_ocr/results/` | OCR 主记录和审计 sidecar |
+| `vector/` | 可再生的向量索引和构建报告 |
+
+服务日志默认为 `data/knowledge-lantern.log`；模型服务的日志由具体 provider 自行管理。
+
+## API 概览
+
+### 服务与问答
+
+| 方法 | 路径 | 用途 |
+| --- | --- | --- |
+| `GET` | `/api/health` | 进程健康检查 |
+| `GET` | `/api/paper-qa/health` | 知识库、模型、检索组件、会话和审计状态 |
+| `GET` | `/api/paper-qa/identities` | 查看演示身份 |
+| `POST` | `/api/paper-qa/ask` | 自动路由问答 |
+| `POST` | `/api/paper-qa/conversations` | 创建会话 |
+| `GET` | `/api/paper-qa/conversations` | 列出用户自己的会话 |
+| `GET` | `/api/paper-qa/conversations/{id}` | 读取会话和轮次 |
+
+### 资料和 OCR
+
+| 方法 | 路径 | 用途 |
+| --- | --- | --- |
+| `GET` | `/api/knowledge/documents` | 查询资料元数据 |
+| `POST` | `/api/knowledge/ingest` | 提交资料进入待审核区 |
+| `POST` | `/api/knowledge/documents/{id}/publish` | 发布资料 |
+| `POST` | `/api/knowledge/documents/{id}/reject` | 拒绝资料 |
+| `GET` | `/api/study/ocr/health` | 查询 OCR 能力状态 |
+| `POST` | `/api/study/ocr/uploads` | 上传图片 |
+| `POST` | `/api/study/ocr/jobs` | 提交 OCR 任务 |
+| `GET` | `/api/study/ocr/jobs` | 查询 OCR 任务元数据 |
+| `GET` | `/api/study/ocr/jobs/{id}` | 查询结构化 OCR 结果 |
+
+常见错误语义：未知身份返回 `401`，权限或动作不允许返回 `403`，资源不存在返回 `404`，输入无效返回 `400`，状态冲突返回 `409`。证据不足使用业务状态 `insufficient_evidence`，不等同于权限拒绝。
 
 ## 项目结构
 
-```
-Shuchiin Academy/
-├── config.yaml              # API Key + 模型配置
-├── pyproject.toml
-├── README.md
-├── skills/                   # Skill 目录 (22 个 public skill)
-│   ├── public/               # 内置 skill (从 deer-flow 移植)
-│   ├── custom/               # 用户自定义 skill
-│   └── legacy/               # 旧版 skill
-├── static/index.html        # Web UI
-├── src/
-│   ├── main.py              # CLI 入口
-│   ├── server.py            # FastAPI + WebSocket
-│   ├── config.py            # 配置加载 (YAML + 环境变量)
-│   ├── agents/
-│   │   ├── ceo.py           # CEO: 任务拆解 → dispatch_tasks
-│   │   ├── developer.py     # Developer: plan → write_parallel → save → END
-│   │   ├── researcher.py    # Researcher: 前端设计调研（前置，非管道内调用）
-│   │   ├── reviewer.py      # Reviewer: 三维审查（可运行50%+功能30%+可用性20%）
-│   │   └── llm.py           # LLM 工厂 + JSON 安全解析
-│   ├── graph/
-│   │   └── orchestrator.py  # LangGraph 图构建 + 适配器 + 流式运行
-│   ├── skills/              # Skill 系统 (四层: types/parser/loader/prompt)
-│   │   ├── types.py         # Skill 数据类
-│   │   ├── parser.py        # SKILL.md YAML 解析
-│   │   ├── loader.py        # 目录扫描加载
-│   │   └── prompt.py        # XML 提示词注入
-│   ├── state/
-│   │   └── types.py         # ParentState, DeveloperState, ResearcherState
-│   └── utils/
-│       └── files.py         # JSON 文件读写 (Agent 间通信媒介)
-└── data/
-    ├── checkpoints.db       # LangGraph SQLite 状态持久化
-    ├── outputs/             # Developer 代码产物 (JSON)
-    ├── research/            # Researcher 调研产物 (JSON)
-    └── pages/               # HTML 页面直出 (可直接浏览器打开)
+```text
+src/
+  server.py          FastAPI 应用和 HTTP 路由
+  access/            身份、角色、授权上下文和访问决策
+  knowledge/         文档存储、元数据、FTS、向量和图谱检索
+  paper_qa/          问答路由、检索、模型调用、会话和审计
+  study/             学习记录和 OCR 适配层
+  config.py          模型服务配置读取
+static/              主工作台和学习记录前端
+scripts/             种子构建、迁移、审计和索引脚本
+tests/               后端、权限、检索、OCR 和前端契约测试
+data/                本地数据库、索引、报告和运行时文件
+run_server.sh        通用 FastAPI 启动脚本
 ```
 
----
+## 测试
 
-## 动态任务路由（v2.1）
+运行完整测试集：
 
-### 四种任务类型
-
-CEO 自动识别用户输入，分派到对应管道：
-
-| 任务类型 | 触发词 | 管道 |
-|---------|--------|------|
-| **code** | 游戏/网站/API/管理系统 | Researcher → Developer → Reviewer → END |
-| **research** | 调研/研究/搜索 | Researcher(通用) → END |
-| **analysis** | 数据/统计/图表 | Developer → Reviewer → END |
-| **report** | 报告/文档/PPT | Writer → Reviewer → END |
-| **skill** | `/image-generation` 等 | SkillRunner → END |
-
-### 图节点（14个）
-
-```
-ceo → researcher_frontend / researcher_general / fanout
-fanout → developer_frontend / developer_backend / developer_data_analysis
-         / writer_report / skill_runner
-developer_* → reviewer_* → END
-writer_report → reviewer_report → END
-skill_runner → END
+```bash
+PYTHONPATH=src .venv/bin/python -m pytest tests/ -q
 ```
 
----
+测试覆盖访问控制、知识库构建与迁移、FTS/混合检索、问答服务、会话归属、资料审核、API 契约、前端契约以及 OCR 路径安全和身份规则。
 
-## Skill 系统（四层架构 + 执行层）
+## 当前边界
 
-### 架构
+- 演示身份不是认证系统，生产使用前必须接入真实身份认证和组织权限系统。
+- 种子知识只用于测试，不能作为真实制度、财务数据或业务决策依据。
+- 向量检索、图谱和 reranker 依赖本地模型与索引，缺失时会降级，不会自动下载权重。
+- 学习页面的一部分记录库、图表和检索结果仍是前端演示数据。
+- 业务模式的部门过滤和真实业务看板数据尚未接入；当前后端主路径仍是部门知识问答。
+- `data/` 和 `work/` 中的运行时文件应根据部署方式决定是否纳入版本控制，真实资料不应直接提交到仓库。
 
-```
-skills/                          ← Layer 1: 文件约定
-├── public/                      ← 内置 skill，只读
-│   ├── deep-research/SKILL.md   ← 每个 skill 一个目录 + SKILL.md
-│   └── ... (22 个 skill)
-└── custom/                      ← 用户自定义 skill
+## License
 
-src/skills/
-├── types.py    ← Skill 数据类 (含 executor/runtime/entrypoint)
-├── parser.py   ← YAML frontmatter 解析
-├── loader.py   ← os.walk 扫描 + 自动检测可执行脚本
-└── prompt.py   ← Skill 索引 → XML 提示词注入
-
-src/agents/skill_runner.py  ← Skill 脚本执行器
-```
-
-### 自动检测可执行技能
-
-Loader 自动扫描每个 skill 目录，发现有 `scripts/` 目录且未声明 `executor` 时，自动设置 `executor=script` 并推断 runtime：
-
-| 后缀 | runtime |
-|------|---------|
-| `.py` | `python` |
-| `.js` | `node` |
-| `.sh` | `bash` |
-
-当前自动检测到 **13 个可执行技能**（image-generation, ppt-generation, chart-visualization 等）。
-
-### `/skill-name` 快速路由
-
-用户输入 `/image-generation 生成熊猫` → CEO 直接创建 skill 任务，跳过 LLM 分类：
-
-```
-/_ → SkillRunner:
-  1. 读 SKILL.md Markdown 正文（完整执行指令）
-  2. LLM 理解意图 → 生成脚本 CLI 参数
-  3. subprocess 执行 scripts/generate.py
-  4. 保存结果 → END
-```
-
-### Skill 的 SKILL.md 格式
-
-```markdown
----
-name: deep-research
-description: Use this skill when researching any topic online...
-executor: prompt           # "prompt" | "script"
-runtime: ""                # 仅 executor=script: python | node | bash
-entrypoint: ""             # 仅 executor=script: scripts/generate.py
----
-
-# Deep Research Skill
-
-## Overview
-...
-```
-
----
-
-## 沙箱执行系统
-
-```
-Reviewer 节点内置三层验证:
-  1. _verify_code()      ← 静态代码结构验证（不消耗 LLM token）
-  2. run_in_sandbox()    ← 沙箱实际运行（Docker 容器 或 subprocess 降级）
-  3. reviewer_execute()  ← LLM 审查（综合前两步结果评分）
-
-src/sandbox/
-├── __init__.py     ← 导出 run_in_sandbox
-└── executor.py     ← 沙箱执行引擎
-```
-
-### content_type 执行策略
-
-| content_type | 执行方式 | 说明 |
-|-------------|---------|------|
-| code_node | Docker `npm test` / subprocess `node --check` | Node.js 代码 |
-| code_python | Docker `pytest` / subprocess `py_compile` | Python 代码 |
-| code_html | 静态 HTML/CSS/JS 结构验证 | 不消耗运行时 |
-| report/research | 跳过 | 不需要运行时验证 |
-
-### Docker 降级
-
-```
-Docker daemon 可用？ → 容器内运行 (512MB/断网/64进程限制)
-    ↓ 不可用
-subprocess → node --check / python -m py_compile (仅语法检查)
-```
-
----
-
-## 用户宪法文件系统
-
-用户偏好存储在 `~/.shuchiin/constitution.yaml`，每次 CEO 启动时自动注入 prompt。
-
-```yaml
-# ~/.shuchiin/constitution.yaml
-preferences:
-  tech_stack:
-    frontend: "React + TypeScript"
-    backend: "FastAPI"
-  output:
-    explain_after: false  # 直接干活不解释
-current_project:
-  name: "Shuchiin Academy"
-```
-
-空宪法 → 返回空字符串 → 不占用 token。
-
-API: `GET/POST /api/constitution`
-
-### 设计决策：为什么不用自动记忆提取
-
-| | 宪法文件 | 自动记忆提取 |
-|---|---|---|
-| Token 开销 | ~200（精准） | ~800（含噪声） |
-| 正确率 | 100%（用户写的） | ~70%（LLM 猜的） |
-| 维护成本 | 手动更新 | 自动 |
-| 适合场景 | 单用户/少用户 | 大规模多用户 |
-
-当前选择宪法文件优先，自动提取留待以后按需加入。
-
----
-
-## 工具系统（Tool Registry）
-
-### 设计原则
-
-200个工具全放磁盘 ≠ 200个工具全塞prompt。Prompt 里只放 3-5 个活跃的。
-
-```
-tools/registry.py (磁盘，不进prompt)
-  ┌──────────────────┐
-  │ 200个工具定义     │
-  │ web_search       │
-  │ github_search    │        tool_search("数据库")
-  │ brave_search     │  ────────────────────────→  LLM prompt (只3个)
-  │ filesystem_read  │                              postgres_query
-  │ ...              │                              mysql_query
-  └──────────────────┘                              redis_get
-```
-
-### 当前 5 个内置工具
-
-| 工具 | 说明 |
-|------|------|
-| `web_search` | DuckDuckGo 搜索，免费无 API Key |
-| `read_page` | 读取网页纯文本内容 |
-| `github_search_repos` | GitHub API 搜索仓库 |
-| `filesystem_read` | 读取本地文件 |
-| `filesystem_list` | 列出目录内容 |
-
-### Prompt 占用
-
-| 工具数 | Prompt 字符 |
-|--------|-----------|
-| 1 个 | ~200 chars |
-| 5 个 | ~500 chars |
-| 200 个（全放） | ~20000 chars |
-
-### 工具调用循环（Researcher 通用调研模式）
-
-```
-LLM 输出: {"tool_search": "react"} 
-  → Python: registry.search("react")
-  → 返回: [web_search, github_search_repos]
-  → 注入 prompt
-
-LLM 输出: {"tool_call": "web_search", "arguments": {"query": "React 19"}}
-  → Python: execute_tool("web_search", {"query": "React 19"})
-  → 返回: 真实搜索结果
-  → 反馈给 LLM → LLM 基于真实数据写报告
-```
-
-最多 5 轮工具调用，之后强制 LLM 给出最终答案。
-
-### 添加新工具
-
-```python
-# src/tools/registry.py → BUILTIN_TOOLS 列表
-ToolDef(
-    name="postgres_query",
-    description="执行 SQL 查询",
-    tags=["database", "sql", "postgres"],
-    parameters={...},
-    endpoint="builtin",
-)
-# + src/tools/executor.py → 添加执行逻辑
-```
-
----
-
-## 已解决的核心问题
-
-### 🔴 输出截断（2026-07-20）
-
-**症状**：LLM 每次输出 ~2000 字就截断，复杂任务代码永远写不完整。
-
-**根因**：`get_llm()` 没传 `max_tokens`，StepFun 模型默认 4096 tokens ≈ 2000 中文字。
-
-**修复**：`llm.py` 默认 `max_tokens=16384`，输出容量 ×4。config.yaml 新增 `max_tokens` 配置项。
-
-### 🔴 重做=推倒重来（2026-07-20）
-
-**症状**：Reviewer 退回重做时，Developer 不知道哪里好哪里坏，全部重写，结果可能更差。第一次 45 分 → 第二次 45 分 → 第三次 30 分。
-
-**根因**：退回时只传了 issue 文本，没有保留好代码，Developer 不知道要保留什么。
-
-**修复**：增量修复机制——Reviewer 退回时保留 `kept_code`（好代码），Developer 在此基础上只修问题部分。流程改为 Reviewer → Developer(增量修) → Reviewer(再审)。
-
-### 🔴 前端 dump 源码（2026-07-20）
-
-**症状**：Web UI 的 Answer 框显示 5 万字符完整源码 JSON。
-
-**修复**：`direct_answer` 改为 Reviewer 摘要，前端只显示预览链接 + 评分 + 任务列表。
-
-### 🟡 BrokenPipeError 崩溃（2026-07-16）
-
-**症状**：Developer 的 `print()` 在 uvicorn reload 时 stdout 管道断开，整个工作流崩溃。
-
-**修复**：`server.py` 启动时用 `_SafeStdout` 包装 `sys.stdout/stderr`，BrokenPipeError 静默忽略。
-
-### 🟡 uvicorn reload 杀工作流（2026-07-16）
-
-**症状**：每次改代码 uvicorn reload 重启 worker，正在跑的工作流状态损坏。
-
-**修复**：SQLite checkpoint 持久化 + `_cleanup_wal()` 清理损坏的 WAL 文件。
-
-### 🟡 StepFun API 频繁超时（2026-07-16）
-
-**症状**：日志中 22 次 `Retrying request`，4 次 `APITimeoutError`。
-
-**根因**：StepFun API 对长响应不稳定 + httpx 底层 read timeout 不受 `config.yaml` 控制。
-
-**修复**：`max_tokens=16384` 让单次调用产生更多代码，减少调用次数。httpx 超时由 langchain-openai 的 `timeout` 参数统一控制。
-
----
-
-## 架构演进（关键节点）
-
-| 日期 | 变更 |
-|------|------|
-| 07-14 | v1: CEO→Developer→Reviewer→ceo_feedback→Researcher 动态路由 |
-| 07-15 | v2: Send 扇出 4 角色并行 + dispatch_tasks 字典 + Command 路由 |
-| 07-16 | v3: 放弃动态工作流，简化为 CEO→Researcher→Developer→Reviewer 线性管道 |
-| 07-16 | v4: 并行 Developer + [NEEDS_RESEARCH] 标记 + 信息封锁 |
-| 07-20 | v5: 增量修复（kept_code+reviewer_feedback）+ Reviewer→Researcher→Developer 回传 + max_tokens 16K |
-| 07-22 | v6: 简化——Researcher 从管道内回退改为前置设计调研（仅前端）；Reviewer 直接回退 Developer，不经过 Researcher；新增 Verifier 纯代码验证 |
-
----
-
-## Skill 系统（四层架构）
-
-### 架构
-
-```
-skills/                          ← Layer 1: 文件约定
-├── public/                      ← 内置 skill，只读
-│   ├── deep-research/SKILL.md   ← 每个 skill 一个目录 + SKILL.md
-│   ├── data-analysis/SKILL.md   ← YAML frontmatter (name, description)
-│   └── ... (22 个 skill)
-└── custom/                      ← 用户自定义 skill，可编辑
-
-src/skills/
-├── types.py    ← Layer 1: Skill 数据类
-├── parser.py   ← Layer 2: SKILL.md → Skill 对象 (YAML frontmatter 解析)
-├── loader.py   ← Layer 3: os.walk 扫描加载，按 name 去重排序
-└── prompt.py   ← Layer 4: list[Skill] → XML 提示词注入
-```
-
-### Skill 的 SKILL.md 格式
-
-```markdown
----
-name: deep-research
-description: Use this skill when researching any topic online...
----
-
-# Deep Research Skill
-
-## Overview
-...
-```
-
-YAML frontmatter 中 `name` 和 `description` 必填。`---` 之后是完整的 Markdown 指令正文。
-
-### 前端 / 补全
-
-在输入框中输入 `/` 自动弹出可用 skill 下拉列表，支持模糊搜索。选择后自动填充 `/skill-name `。
-
-API: `GET /api/skills` → `{"skills": [...], "names": [...]}`
-
----
-
-## 设计原则
-
-1. **信息封锁**：每个 Agent 通过 input/output 适配器只看到自己需要的字段
-2. **文件通信**：Agent 产出写入 JSON，state 只存路径，不传原始内容
-3. **并行优先**：独立任务通过 Send 并行执行，互不阻塞
-4. **增量修复**：退回重做保留好代码，只修问题部分
-5. **3 次 fallback**：retry 退回最多 3 次，超过强制通过
-6. **前置调研**：前端任务在编码前先做设计调研（Researcher），避免方向偏离
-7. **SQLite 持久化**：LangGraph checkpoint 支持断点恢复
-8. **纯代码验证**：Reviewer 调用前先跑 Verifier（不消耗 LLM token），验证结果辅助评分
+见 [LICENSE](LICENSE)。

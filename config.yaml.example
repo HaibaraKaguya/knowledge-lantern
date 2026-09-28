@@ -1,9 +1,52 @@
-# Shuchiin Academy 配置文件
-# 复制为 config.yaml 并填入你的 API Key：
+# Knowledge Lantern 配置文件
+# 复制为 config.yaml 并按需编辑：
 #   cp config.yaml.example config.yaml
+#
+# 模型端点使用 OpenAI-compatible 的 /v1/chat/completions 接口。
+# 可以连接本地推理服务或远程模型服务；项目不绑定具体模型厂商或运行时。
+#
+# 优先级: 环境变量 > config.yaml > 内置默认值
+# 环境变量: SRC_API_KEY / SRC_API_BASE_URL / SRC_MODEL / SRC_TEMPERATURE / SRC_TIMEOUT / SRC_MAX_TOKENS
+#
+# 本地端点通常无需真实 API Key（调用端自动使用占位符 "not-needed"）；
+# 远程端点请填入真实 Key，缺 Key 会直接报错，不做隐式回退。
+#
+# 安全说明：模型请求在客户端强制 trust_env=False，绝不继承系统代理。
 
-api_key: ""
-api_base_url: ""
-model: "gpt-4o-mini"
+api_key: ""                              # 本地服务通常可留空
+api_base_url: "http://127.0.0.1:8080/v1" # OpenAI-compatible 端点
+model: "local-model"
 temperature: 0.3
 timeout: 120
+max_tokens: 8192
+
+# ── 混合检索 / GraphRAG（阶段 1，可选组件）────────────────────────────
+# 语义：BM25/FTS + BGE-M3/FAISS 向量 + 图谱扩展 → 加权 RRF → 可选 BGE rerank。
+# 所有组件均可缺失；缺失时检索自动降级为 FTS，且 health/ask 的 retrieval_info
+# 会如实显示对应组件 disabled（绝不虚报 hybrid_rrf / graph 已开启）。
+# 环境变量优先级高于本文件：SRC_RETRIEVAL_VECTOR / SRC_RETRIEVAL_GRAPH /
+# SRC_RETRIEVAL_RERANKER / SRC_RETRIEVAL_MODEL / SRC_RETRIEVAL_BACKEND /
+# SRC_RETRIEVAL_DEVICE / SRC_RETRIEVAL_RERANKER_MODEL / SRC_RETRIEVAL_TRACE
+#
+# 重建向量索引（由 data/knowledge.db 可再生，安全可重复执行）：
+#   .venv/bin/python scripts/build_knowledge_indices.py --db data/knowledge.db
+retrieval:
+  vector:
+    enabled: true                  # true/false/auto
+    model: "BAAI/bge-m3"           # 本地模型目录或缓存名（离线）
+    backend: "auto"                # auto | sentence_transformers | flagembedding
+    device: "cpu"
+  graph:
+    enabled: true                  # 图数据随 knowledge.db 构建写入
+  reranker:
+    enabled: true                  # 模型缺失时自动禁用（安全降级，状态如实报告）
+    model: "BAAI/bge-reranker-v2-m3"  # 本地模型目录或 HF 缓存名（离线；不自动下载）
+  rrf:
+    k: 60
+    weights: {bm25: 1.0, vector: 1.0, graph: 0.6}
+  # 结构化 retrieval_trace（测试/debug）：默认关闭，普通用户 API 响应保持简洁。
+  # 开启后 POST /api/paper-qa/ask 传 {"debug": true} 可读取完整 trace
+  # （顺序：fts_bm25 → vector → graph → rrf_fusion → reranker）。
+  # 本地测试身份（user_id 缺省）即使此处关闭也可读取 trace。
+  trace:
+    enabled: false

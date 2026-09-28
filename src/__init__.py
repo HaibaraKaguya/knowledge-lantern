@@ -1,7 +1,2 @@
-"""Shuchiin Academy — 包入口.
-
-向外暴露三个核心函数：run(同步执行工作流)、continue_conversation(多轮对话)、
-list_sessions(列出历史会话)。所有函数委托给 src.graph.orchestrator。
-"""
-from src.graph.orchestrator import run, continue_conversation, list_sessions
-__all__ = ["run", "continue_conversation", "list_sessions"]
+"""Knowledge Lantern 内部知识工作台。"""
+#用于告诉python解释器这是一个包目录，并且生成了doc文件时会有相应的文档便于解释

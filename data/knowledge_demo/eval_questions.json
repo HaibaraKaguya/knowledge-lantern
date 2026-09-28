@@ -1,0 +1,890 @@
+[
+  {
+    "question": "在经营分析中，登录与身份验证的操作步骤是什么？",
+    "gold": {
+      "document_id": "BA-0001",
+      "contains": "在BI 看板中，登录与身份验证的标准"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在经营分析中，单据审核流转的操作步骤是什么？",
+    "gold": {
+      "document_id": "BA-0028",
+      "contains": "在预测引擎中，单据审核流转的标准操作"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "经营分析遇到“缓存未刷新”报错时应如何排查？",
+    "gold": {
+      "document_id": "BA-0055",
+      "contains": "使用经营分析平台时出现「缓存未刷新」"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "报错排查",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "经营分析的“审批阈值”参数应如何配置？",
+    "gold": {
+      "document_id": "BA-0082",
+      "contains": "指标中心的「审批阈值」参数建议配置如"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "参数配置",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "经营分析中“入职转正”的处理流程是什么？",
+    "gold": {
+      "document_id": "BA-0109",
+      "contains": "「入职转正」业务在多维分析中的处理流"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "业务流程",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "经营分析的“经营日报”报表如何查询与解读？",
+    "gold": {
+      "document_id": "BA-0136",
+      "contains": "「经营日报」报表在BI 看板中通过「"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "报表查询",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "经营分析的“凭证过账”如何处理？",
+    "gold": {
+      "document_id": "BA-0163",
+      "contains": "预测引擎的「凭证过账」处理（合成口径"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "public",
+      "category": "月末/年末结账",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "经营分析遇到“跨年业务”这类边界业务如何处理？",
+    "gold": {
+      "document_id": "BA-0190",
+      "contains": "「跨年业务」属于经营分析平台中的边界"
+    },
+    "meta": {
+      "department": "经营分析",
+      "classification": "internal",
+      "category": "特殊边界业务",
+      "owner_department": "business_analysis",
+      "business_category": "business_analysis",
+      "applicable_departments": [
+        "business_analysis"
+      ],
+      "access_scope": "finance-ledger",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在财务合规中，登录与身份验证的操作步骤是什么？",
+    "gold": {
+      "document_id": "FC-0001",
+      "contains": "在费用报销系统中，登录与身份验证的标"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在财务合规中，单据审核流转的操作步骤是什么？",
+    "gold": {
+      "document_id": "FC-0028",
+      "contains": "在固定资产系统中，单据审核流转的标准"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "财务合规遇到“缓存未刷新”报错时应如何排查？",
+    "gold": {
+      "document_id": "FC-0055",
+      "contains": "使用总账系统时出现「缓存未刷新」报错"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "public",
+      "category": "报错排查",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "财务合规的“审批阈值”参数应如何配置？",
+    "gold": {
+      "document_id": "FC-0082",
+      "contains": "应付系统的「审批阈值」参数建议配置如"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "public",
+      "category": "参数配置",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "财务合规中“入职转正”的处理流程是什么？",
+    "gold": {
+      "document_id": "FC-0109",
+      "contains": "「入职转正」业务在银企直连中的处理流"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "public",
+      "category": "业务流程",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "财务合规的“经营日报”报表如何查询与解读？",
+    "gold": {
+      "document_id": "FC-0136",
+      "contains": "「经营日报」报表在费用报销系统中通过"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "public",
+      "category": "报表查询",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "财务合规的“凭证过账”如何处理？",
+    "gold": {
+      "document_id": "FC-0163",
+      "contains": "固定资产系统的「凭证过账」处理（合成"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "internal",
+      "category": "月末/年末结账",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "finance-ledger",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "财务合规遇到“跨年业务”这类边界业务如何处理？",
+    "gold": {
+      "document_id": "FC-0190",
+      "contains": "「跨年业务」属于总账系统中的边界业务"
+    },
+    "meta": {
+      "department": "财务合规",
+      "classification": "internal",
+      "category": "特殊边界业务",
+      "owner_department": "finance",
+      "business_category": "finance_compliance",
+      "applicable_departments": [
+        "finance",
+        "business_analysis"
+      ],
+      "access_scope": "finance-ledger",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在人力资源中，登录与身份验证的操作步骤是什么？",
+    "gold": {
+      "document_id": "HR-0001",
+      "contains": "在考勤系统中，登录与身份验证的标准操"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在人力资源中，单据审核流转的操作步骤是什么？",
+    "gold": {
+      "document_id": "HR-0028",
+      "contains": "在绩效系统中，单据审核流转的标准操作"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "人力资源遇到“缓存未刷新”报错时应如何排查？",
+    "gold": {
+      "document_id": "HR-0055",
+      "contains": "使用HRM 人事系统时出现「缓存未刷"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "报错排查",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "人力资源的“审批阈值”参数应如何配置？",
+    "gold": {
+      "document_id": "HR-0082",
+      "contains": "招聘门户的「审批阈值」参数建议配置如"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "参数配置",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "人力资源中“入职转正”的处理流程是什么？",
+    "gold": {
+      "document_id": "HR-0109",
+      "contains": "「入职转正」业务在培训平台中的处理流"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "业务流程",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "人力资源的“经营日报”报表如何查询与解读？",
+    "gold": {
+      "document_id": "HR-0136",
+      "contains": "「经营日报」报表在考勤系统中通过「报"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "报表查询",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "人力资源的“凭证过账”如何处理？",
+    "gold": {
+      "document_id": "HR-0163",
+      "contains": "绩效系统的「凭证过账」处理（合成口径"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "月末/年末结账",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "人力资源遇到“跨年业务”这类边界业务如何处理？",
+    "gold": {
+      "document_id": "HR-0190",
+      "contains": "「跨年业务」属于HRM 人事系统中的"
+    },
+    "meta": {
+      "department": "人力资源",
+      "classification": "public",
+      "category": "特殊边界业务",
+      "owner_department": "human_resources",
+      "business_category": "human_resources",
+      "applicable_departments": [
+        "human_resources"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在项目与运营中，登录与身份验证的操作步骤是什么？",
+    "gold": {
+      "document_id": "PO-0001",
+      "contains": "在工时系统中，登录与身份验证的标准操"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在项目与运营中，单据审核流转的操作步骤是什么？",
+    "gold": {
+      "document_id": "PO-0028",
+      "contains": "在运营中台中，单据审核流转的标准操作"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "项目与运营遇到“缓存未刷新”报错时应如何排查？",
+    "gold": {
+      "document_id": "PO-0055",
+      "contains": "使用项目管理系统时出现「缓存未刷新」"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "报错排查",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "项目与运营的“审批阈值”参数应如何配置？",
+    "gold": {
+      "document_id": "PO-0082",
+      "contains": "采购门户的「审批阈值」参数建议配置如"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "参数配置",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "项目与运营中“入职转正”的处理流程是什么？",
+    "gold": {
+      "document_id": "PO-0109",
+      "contains": "「入职转正」业务在客户台账中的处理流"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "业务流程",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "项目与运营的“经营日报”报表如何查询与解读？",
+    "gold": {
+      "document_id": "PO-0136",
+      "contains": "「经营日报」报表在工时系统中通过「报"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "报表查询",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "项目与运营的“凭证过账”如何处理？",
+    "gold": {
+      "document_id": "PO-0163",
+      "contains": "运营中台的「凭证过账」处理（合成口径"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "月末/年末结账",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "项目与运营遇到“跨年业务”这类边界业务如何处理？",
+    "gold": {
+      "document_id": "PO-0190",
+      "contains": "「跨年业务」属于项目管理系统中的边界"
+    },
+    "meta": {
+      "department": "项目与运营",
+      "classification": "public",
+      "category": "特殊边界业务",
+      "owner_department": "project_operations",
+      "business_category": "project_operations",
+      "applicable_departments": [
+        "project_operations"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在行政中，登录与身份验证的操作步骤是什么？",
+    "gold": {
+      "document_id": "AD-0001",
+      "contains": "在会议室系统中，登录与身份验证的标准"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "在行政中，单据审核流转的操作步骤是什么？",
+    "gold": {
+      "document_id": "AD-0028",
+      "contains": "在用车平台中，单据审核流转的标准操作"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "系统操作",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "行政遇到“缓存未刷新”报错时应如何排查？",
+    "gold": {
+      "document_id": "AD-0055",
+      "contains": "使用OA 办公系统时出现「缓存未刷新"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "报错排查",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "行政的“审批阈值”参数应如何配置？",
+    "gold": {
+      "document_id": "AD-0082",
+      "contains": "固定资产台账的「审批阈值」参数建议配"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "参数配置",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "行政中“入职转正”的处理流程是什么？",
+    "gold": {
+      "document_id": "AD-0109",
+      "contains": "「入职转正」业务在印章系统中的处理流"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "业务流程",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "行政的“经营日报”报表如何查询与解读？",
+    "gold": {
+      "document_id": "AD-0136",
+      "contains": "「经营日报」报表在会议室系统中通过「"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "报表查询",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "行政的“凭证过账”如何处理？",
+    "gold": {
+      "document_id": "AD-0163",
+      "contains": "用车平台的「凭证过账」处理（合成口径"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "月末/年末结账",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  },
+  {
+    "question": "行政遇到“跨年业务”这类边界业务如何处理？",
+    "gold": {
+      "document_id": "AD-0190",
+      "contains": "「跨年业务」属于OA 办公系统中的边"
+    },
+    "meta": {
+      "department": "行政",
+      "classification": "public",
+      "category": "特殊边界业务",
+      "owner_department": "administration",
+      "business_category": "administration",
+      "applicable_departments": [
+        "administration"
+      ],
+      "access_scope": "company_public",
+      "origin": "seeded_synthetic_or_curated",
+      "license": "project-generated-synthetic-no-third-party",
+      "is_real_company_data": false,
+      "seed_label": "测试期种子知识"
+    }
+  }
+]
